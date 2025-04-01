@@ -1,74 +1,67 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+// app/(tabs)/index.tsx
+import React from 'react';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { configureStore, createSlice, createAction } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+// Action dùng cho extraReducers
+const RESET_COUNTER = createAction('RESET_COUNTER');
 
-export default function HomeScreen() {
+// Slice quản lý state counter
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: { value: 5 },
+  reducers: {
+    increment: (state) => { state.value += 1 },
+    decrement: (state) => { state.value -= 1 },
+    multiply: (state) => { state.value *= state.value },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(RESET_COUNTER, (state) => {
+      state.value = 5;
+    });
+  }
+});
+
+// Redux store
+const store = configureStore({
+  reducer: { counter: counterSlice.reducer }
+});
+
+// React component
+const CounterApp = () => {
+  const dispatch = useDispatch();
+  const counter = useSelector((state: any) => state.counter.value);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      <Text style={styles.counterText}>{counter}</Text>
+      <Button title="Tăng biến đếm" onPress={() => dispatch(counterSlice.actions.increment())} />
+      <Button title="Giảm biến đếm" onPress={() => dispatch(counterSlice.actions.decrement())} />
+      <Button title="Mũ bình phương biến đếm" onPress={() => dispatch(counterSlice.actions.multiply())} />
+      <Button title="Reset biến đếm" onPress={() => dispatch(RESET_COUNTER())} />
+    </View>
+  );
+};
+
+export default function App() {
+  return (
+    <Provider store={store}>
+      <CounterApp />
+    </Provider>
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+  counterText: {
+    fontSize: 32,
+    marginBottom: 20
+  }
 });
