@@ -11,15 +11,16 @@ const RESET_COUNTER = createAction('RESET_COUNTER');
 // Slice quản lý state counter
 const counterSlice = createSlice({
   name: 'counter',
-  initialState: { value: 5 },
+  initialState: { value: 10 },
   reducers: {
     increment: (state) => { state.value += 1 },
     decrement: (state) => { state.value -= 1 },
     multiply: (state) => { state.value *= state.value },
+    lapphuong: (state) => { state.value *= (state.value * state.value) },
   },
   extraReducers: (builder) => {
     builder.addCase(RESET_COUNTER, (state) => {
-      state.value = 5;
+      state.value = 10;
     });
   }
 });
@@ -40,6 +41,7 @@ const CounterApp = () => {
       <Button title="Tăng biến đếm" onPress={() => dispatch(counterSlice.actions.increment())} />
       <Button title="Giảm biến đếm" onPress={() => dispatch(counterSlice.actions.decrement())} />
       <Button title="Mũ bình phương biến đếm" onPress={() => dispatch(counterSlice.actions.multiply())} />
+      <Button title="Lập phương biến đếm" onPress={() => dispatch(counterSlice.actions.lapphuong())} />
       <Button title="Reset biến đếm" onPress={() => dispatch(RESET_COUNTER())} />
     </View>
   );
