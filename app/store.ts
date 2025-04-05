@@ -3,6 +3,9 @@ import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ImagePickerResponse } from 'react-native-image-picker';
 
+// Thêm dòng sau
+import { pokemonApi } from './services/pokemonApi';
+
 // Y change provider
 const initialState = {
     value: 0
@@ -49,6 +52,8 @@ export const { addImage, removeImage, clearImages } = imagesSlice.actions;
 const rootReducer = combineReducers({
     counter: counterSlice.reducer,
     images: imagesSlice.reducer,
+    // Thêm reducer từ pokemonApi
+    [pokemonApi.reducerPath]: pokemonApi.reducer,
 });
 
 // Configure persist
@@ -72,7 +77,7 @@ export const store = configureStore({
             serializableCheck: {
                 ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE']
             }
-        })
+        }).concat(pokemonApi.middleware) // Thêm middleware của pokemonApi
 });
 
 // Create persistor
@@ -81,4 +86,4 @@ export const persistor = persistStore(store);
 // Export types
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-export default store; 
+export default store;
